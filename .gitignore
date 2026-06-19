@@ -1,0 +1,15 @@
+.env
+.env.dev
+.env.prod
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+node_modules/
+dist/
+.DS_Store
+docs/
+.superpowers/
