@@ -1,0 +1,50 @@
+version: '3'
+
+tasks:
+  dev:
+    desc: Start all services for development
+    cmds:
+      - docker compose up -d db
+      - cd api && go run ./cmd/server/ &
+      - cd ui && npm run dev
+
+  test:backend:
+    desc: Run Go backend tests
+    cmds:
+      - cd api && go test ./... -v -count=1
+
+  test:frontend:
+    desc: Run Vue frontend tests
+    cmds:
+      - cd ui && npx vitest run
+
+  test:all:
+    desc: Run all tests
+    cmds:
+      - cd api && go test ./... -v -count=1
+      - cd ui && npx vitest run
+
+  build:api:
+    desc: Build Go API binary
+    cmds:
+      - cd api && go build -o bin/server ./cmd/server/
+
+  build:ui:
+    desc: Build Vue SPA
+    cmds:
+      - cd ui && npm run build
+
+  docker:build:
+    desc: Build Docker images
+    cmds:
+      - docker compose build
+
+  docker:up:
+    desc: Start all services
+    cmds:
+      - docker compose up -d
+
+  docker:down:
+    desc: Stop all services
+    cmds:
+      - docker compose down

@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: coverletter-db
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -16,20 +17,33 @@ services:
       retries: 5
 
   api:
+    container_name: coverletter-api
     build: ./api
-    env_file: ./api/.env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-coverletter}:${POSTGRES_PASSWORD:-coverletter_secret}@db:5432/${POSTGRES_DB:-coverletter_hub}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+      CLAUDE_API_KEY: ${CLAUDE_API_KEY:-}
+      LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID:-}
+      LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET:-}
+      LINKEDIN_REDIRECT_URI: ${LINKEDIN_REDIRECT_URI:-http://localhost:8080/api/v1/auth/linkedin/callback}
+      API_PORT: "8080"
+      FRONTEND_URL: http://localhost:${UI_PORT:-3000}
     ports:
       - "${API_PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
+    restart: on-failure
 
   ui:
+    container_name: coverletter-ui
     build: ./ui
     ports:
       - "${UI_PORT:-3000}:80"
     depends_on:
-      - api
+      api:
+        condition: service_started
+    restart: on-failure
 
 volumes:
   pgdata:
