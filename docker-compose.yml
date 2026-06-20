@@ -15,5 +15,21 @@ services:
       timeout: 3s
       retries: 5
 
+  api:
+    build: ./api
+    env_file: ./api/.env
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ui:
+    build: ./ui
+    ports:
+      - "${UI_PORT:-3000}:80"
+    depends_on:
+      - api
+
 volumes:
   pgdata:

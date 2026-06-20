@@ -1,0 +1,56 @@
+name: coverletter-hub
+description: Multi-user SPA for AI-powered cover letter generation
+
+tasks:
+  dev:
+    description: Start all services for development
+    commands:
+      - docker compose up -d db
+      - cd api && go run ./cmd/server/ &
+      - cd ui && npm run dev
+
+  test:backend:
+    description: Run Go backend tests
+    commands:
+      - cd api && go test ./... -v -count=1
+
+  test:frontend:
+    description: Run Vue frontend tests
+    commands:
+      - cd ui && npx vitest run
+
+  test:all:
+    description: Run all tests
+    commands:
+      - cd api && go test ./... -v -count=1
+      - cd ui && npx vitest run
+
+  build:api:
+    description: Build Go API binary
+    commands:
+      - cd api && go build -o bin/server ./cmd/server/
+
+  build:ui:
+    description: Build Vue SPA
+    commands:
+      - cd ui && npm run build
+
+  migrate:
+    description: Run database migrations
+    commands:
+      - cd api && go run ./cmd/server/ -migrate
+
+  docker:build:
+    description: Build Docker images
+    commands:
+      - docker compose build
+
+  docker:up:
+    description: Start all services
+    commands:
+      - docker compose up -d
+
+  docker:down:
+    description: Stop all services
+    commands:
+      - docker compose down
